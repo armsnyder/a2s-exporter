@@ -7,7 +7,7 @@ A Prometheus exporter for Steam game server info.
 Supports all Steam game servers which speak the UDP-based A2S query protocol, for example:
 
 * Counter-Strike
-* The Forrest
+* The Forest
 * Rust
 * Team Fortress 2
 * Valheim
