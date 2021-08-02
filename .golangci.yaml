@@ -1,0 +1,16 @@
+# https://golangci-lint.run/usage/configuration/
+
+linters-settings:
+  goimports:
+    local-prefixes: github.com/armsnyder/a2s-exporter
+
+linters:
+  enable:
+    - gocritic
+    - gofmt
+    - goimports
+    - golint
+    - misspell
+    - testpackage
+    - unconvert
+    - whitespace
