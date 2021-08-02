@@ -54,6 +54,7 @@ jobs:
         with:
           context: .
           push: false
+          build-args: BUILD_VERSION=${{ steps.meta.outputs.version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -63,6 +64,7 @@ jobs:
         with:
           context: .
           push: true
+          build-args: BUILD_VERSION=${{ steps.meta.outputs.version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 

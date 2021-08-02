@@ -14,6 +14,9 @@ import (
 	"github.com/armsnyder/a2s-exporter/internal/collector"
 )
 
+// buildVersion variable is set at build time.
+var buildVersion = "development"
+
 func main() {
 	// Flags.
 	address := flag.String("address", envOrDefault("A2S_EXPORTER_QUERY_ADDRESS", ""), "Address of the A2S query server as host:port (This is a separate port from the main server port).")
@@ -22,22 +25,27 @@ func main() {
 	namespace := flag.String("namespace", envOrDefault("A2S_EXPORTER_NAMESPACE", "a2s"), "Namespace prefix for all exported a2s metrics.")
 	a2sOnlyMetrics := flag.Bool("a2s-only-metrics", envOrDefaultBool("A2S_EXPORTER_A2S_ONLY_METRICS", false), "If true, skips exporting Go runtime metrics.")
 	help := flag.Bool("h", false, "Show help.")
+	version := flag.Bool("version", false, "Show build version.")
 
 	flag.Parse()
 
-	defer os.Exit(1)
+	// Show version.
+	if *version || flag.Arg(0) == "version" {
+		fmt.Println(buildVersion)
+		os.Exit(0)
+	}
 
 	// Show help.
 	if *help || flag.NArg() > 0 {
 		flag.Usage()
-		return
+		os.Exit(1)
 	}
 
 	// Check required arguments.
 	if *address == "" {
 		fmt.Println("address argument is required")
 		flag.Usage()
-		return
+		os.Exit(1)
 	}
 
 	// Set up prometheus metrics registry.
@@ -62,6 +70,8 @@ func main() {
 	// Run http server.
 	fmt.Printf("Serving metrics at http://127.0.0.1:%d%s\n", *port, *path)
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+
+	os.Exit(1)
 }
 
 func envOrDefault(key, def string) string {
