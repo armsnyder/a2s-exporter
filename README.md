@@ -1,6 +1,6 @@
 [![CI](https://github.com/armsnyder/a2s-exporter/actions/workflows/ci.yaml/badge.svg)](https://github.com/armsnyder/a2s-exporter/actions/workflows/ci.yaml)
 
-# A2S Exporter
+# [A2S Exporter](https://github.com/armsnyder/a2s-exporter)
 
 A Prometheus exporter for Steam game server info.
 
