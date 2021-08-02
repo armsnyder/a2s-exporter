@@ -14,7 +14,7 @@ Supports all Steam game servers which speak the UDP-based A2S query protocol, fo
 
 ## Usage
 
-The image is hosted on Docker Hub.
+The image is hosted on Docker Hub. ([Link](https://hub.docker.com/r/armsnyder/a2s-exporter))
 
 ```
 docker run --rm -p 9856:9856 armsnyder/a2s-exporter --address myserver.example.com:12345
