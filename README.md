@@ -17,7 +17,7 @@ Supports all Steam game servers which speak the UDP-based A2S query protocol, fo
 The image is hosted on Docker Hub. ([Link](https://hub.docker.com/r/armsnyder/a2s-exporter))
 
 ```
-docker run --rm -p 9856:9856 armsnyder/a2s-exporter --address myserver.example.com:12345
+docker run --rm -p 9841:9841 armsnyder/a2s-exporter --address myserver.example.com:12345
 ```
 
 ### Arguments
@@ -34,7 +34,7 @@ Flag | Variable | Help
 
 Flag | Variable | Default | Help
 --- | --- | --- | ---
---port | A2S_EXPORTER_PORT | 9856 | Port for the metrics exporter.
+--port | A2S_EXPORTER_PORT | 9841 | Port for the metrics exporter.
 --path | A2S_EXPORTER_PATH | /metrics | Path for the metrics exporter.
 --namespace | A2S_EXPORTER_NAMESPACE | a2s | Namespace prefix for all exported a2s metrics.
 --a2s-only-metrics | A2S_EXPORTER_A2S_ONLY_METRICS | false | If true, excludes Go runtime and promhttp metrics.

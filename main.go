@@ -20,7 +20,7 @@ var buildVersion = "development"
 func main() {
 	// Flags.
 	address := flag.String("address", envOrDefault("A2S_EXPORTER_QUERY_ADDRESS", ""), "Address of the A2S query server as host:port (This is a separate port from the main server port).")
-	port := flag.Int("port", envOrDefaultInt("A2S_EXPORTER_PORT", 9856), "Port for the metrics exporter.")
+	port := flag.Int("port", envOrDefaultInt("A2S_EXPORTER_PORT", 9841), "Port for the metrics exporter.")
 	path := flag.String("path", envOrDefault("A2S_EXPORTER_PATH", "/metrics"), "Path for the metrics exporter.")
 	namespace := flag.String("namespace", envOrDefault("A2S_EXPORTER_NAMESPACE", "a2s"), "Namespace prefix for all exported a2s metrics.")
 	a2sOnlyMetrics := flag.Bool("a2s-only-metrics", envOrDefaultBool("A2S_EXPORTER_A2S_ONLY_METRICS", false), "If true, skips exporting Go runtime metrics.")
