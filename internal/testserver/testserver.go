@@ -22,7 +22,7 @@ type TestServer struct {
 // Serve runs the A2S server.
 // The function blocks execution until an error is encountered.
 func (t *TestServer) Serve(conn net.PacketConn) error {
-	var buf [a2s.MaxPacketSize]byte
+	var buf [a2s.DefaultMaxPacketSize]byte
 
 	for {
 		// Read the next request packet.
