@@ -7,6 +7,7 @@ fix:
 	golangci-lint run --fix
 
 build:
+	go mod tidy
 	go build ./...
 
 test:

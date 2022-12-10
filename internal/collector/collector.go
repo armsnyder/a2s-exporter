@@ -9,14 +9,15 @@ import (
 )
 
 type Collector struct {
-	addr   string
-	client *a2s.Client
-	descs  map[string]*prometheus.Desc
+	addr          string
+	clientOptions []func(*a2s.Client) error
+	client        *a2s.Client
+	descs         map[string]*prometheus.Desc
 }
 
 type adder func(name string, value float64, labelValues ...string)
 
-func New(namespace, addr string) *Collector {
+func New(namespace, addr string, clientOptions ...func(*a2s.Client) error) *Collector {
 	descs := make(map[string]*prometheus.Desc)
 
 	fullDesc := func(name, help string, labels []string) {
@@ -53,8 +54,9 @@ func New(namespace, addr string) *Collector {
 	playerDesc("player_the_ship_money", "Player's money in a The Ship server.")
 
 	return &Collector{
-		addr:  addr,
-		descs: descs,
+		addr:          addr,
+		clientOptions: clientOptions,
+		descs:         descs,
 	}
 }
 
@@ -97,7 +99,7 @@ func (c *Collector) queryInfo() (serverInfo *a2s.ServerInfo, playerInfo *a2s.Pla
 
 	// Lazy initialization of UDP client.
 	if c.client == nil {
-		c.client, err = a2s.NewClient(c.addr)
+		c.client, err = a2s.NewClient(c.addr, c.clientOptions...)
 		if err != nil {
 			fmt.Println("Could not create A2S client:", err)
 			return
@@ -115,7 +117,9 @@ func (c *Collector) queryInfo() (serverInfo *a2s.ServerInfo, playerInfo *a2s.Pla
 	// constructed with The Ship App ID.
 	playerClient := c.client
 	if a2s.AppID(serverInfo.ID) == a2s.App_TheShip {
-		playerClient, err = a2s.NewClient(c.addr, a2s.SetAppID(int32(serverInfo.ID)))
+		options := []func(*a2s.Client) error{a2s.SetAppID(int32(serverInfo.ID))}
+		options = append(options, c.clientOptions...)
+		playerClient, err = a2s.NewClient(c.addr, options...)
 		if err != nil {
 			fmt.Println("Could not create A2S client for The Ship player query:", err)
 			return
