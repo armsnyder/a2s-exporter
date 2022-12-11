@@ -38,7 +38,7 @@ Flag | Variable | Default | Help
 --path | A2S_EXPORTER_PATH | /metrics | Path for the metrics exporter.
 --namespace | A2S_EXPORTER_NAMESPACE | a2s | Namespace prefix for all exported a2s metrics.
 --a2s-only-metrics | A2S_EXPORTER_A2S_ONLY_METRICS | false | If true, excludes Go runtime and promhttp metrics.
---max-packet-size | A2S_EXPORTER_MAX_PACKET_SIZE | 0 | Advanced option to set a non-standard max packet size of the A2S query server. Set to 0 to use the default max packet size.
+--max-packet-size | A2S_EXPORTER_MAX_PACKET_SIZE | 1400 | Advanced option to set a non-standard max packet size of the A2S query server.
 
 #### Special
 
