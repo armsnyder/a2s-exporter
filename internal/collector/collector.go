@@ -209,7 +209,7 @@ func (c *Collector) collectPlayerInfo(playerInfo *a2s.PlayerInfo, add adder) {
 
 	add("player_count", float64(playerInfo.Count))
 
-	for _, player := range playerInfo.Players {
+	for _, player := range c.uniquePlayers(playerInfo.Players) {
 		labelValues := []string{player.Name, fmt.Sprintf("%d", player.Index)}
 
 		add("player_duration", float64(player.Duration), labelValues...)
@@ -220,4 +220,23 @@ func (c *Collector) collectPlayerInfo(playerInfo *a2s.PlayerInfo, add adder) {
 			add("player_the_ship_money", float64(player.TheShip.Money), labelValues...)
 		}
 	}
+}
+
+func (c *Collector) uniquePlayers(players []*a2s.Player) []*a2s.Player {
+	// Some servers like Rust will assign a pool of random player names, which may contain duplicates
+	// and cause errors in the Prometheus registry.
+
+	result := make([]*a2s.Player, 0, len(players))
+	seen := make(map[string]struct{})
+
+	for _, player := range players {
+		if _, ok := seen[player.Name]; ok {
+			continue
+		}
+
+		seen[player.Name] = struct{}{}
+		result = append(result, player)
+	}
+
+	return result
 }

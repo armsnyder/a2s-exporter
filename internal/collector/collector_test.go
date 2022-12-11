@@ -66,11 +66,11 @@ func TestCollector(t *testing.T) {
 	srv := &testserver.TestServer{
 		ServerInfo: &a2s.ServerInfo{
 			Name:       "foo",
-			Players:    2,
+			Players:    3,
 			MaxPlayers: 6,
 		},
 		PlayerInfo: &a2s.PlayerInfo{
-			Count: 2,
+			Count: 3,
 			Players: []*a2s.Player{
 				{
 					Index:    0,
@@ -78,9 +78,15 @@ func TestCollector(t *testing.T) {
 					Duration: 32,
 				},
 				{
-					Index:    1,
+					Index:    0,
 					Name:     "alice",
 					Duration: 64,
+				},
+				// Duplicate players should be de-duplicated to avoid causing registry errors.
+				{
+					Index:    0,
+					Name:     "alice",
+					Duration: 99,
 				},
 			},
 		},
@@ -99,17 +105,17 @@ func TestCollector(t *testing.T) {
 
 	// Spot check the gathered metrics.
 	testAssertGauge(t, metrics, "server_players",
-		expectGauge{value: 2, labels: map[string]string{"server_name": "foo"}},
+		expectGauge{value: 3, labels: map[string]string{"server_name": "foo"}},
 	)
 	testAssertGauge(t, metrics, "server_max_players",
 		expectGauge{value: 6, labels: map[string]string{"server_name": "foo"}},
 	)
 	testAssertGauge(t, metrics, "player_count",
-		expectGauge{value: 2, labels: map[string]string{"server_name": "foo"}},
+		expectGauge{value: 3, labels: map[string]string{"server_name": "foo"}},
 	)
 	testAssertGauge(t, metrics, "player_duration",
 		expectGauge{value: 32, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "jon"}},
-		expectGauge{value: 64, labels: map[string]string{"server_name": "foo", "player_index": "1", "player_name": "alice"}},
+		expectGauge{value: 64, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "alice"}},
 	)
 }
 
@@ -119,6 +125,8 @@ type expectGauge struct {
 }
 
 func testAssertGauge(t *testing.T, metricFamilies []*io_prometheus_client.MetricFamily, name string, expectGauges ...expectGauge) {
+	t.Helper()
+
 	for _, family := range metricFamilies {
 		if family.GetName() != name {
 			continue
