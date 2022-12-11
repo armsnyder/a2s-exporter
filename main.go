@@ -24,7 +24,8 @@ func main() {
 	port := flag.Int("port", envOrDefaultInt("A2S_EXPORTER_PORT", 9841), "Port for the metrics exporter.")
 	path := flag.String("path", envOrDefault("A2S_EXPORTER_PATH", "/metrics"), "Path for the metrics exporter.")
 	namespace := flag.String("namespace", envOrDefault("A2S_EXPORTER_NAMESPACE", "a2s"), "Namespace prefix for all exported a2s metrics.")
-	a2sOnlyMetrics := flag.Bool("a2s-only-metrics", envOrDefaultBool("A2S_EXPORTER_A2S_ONLY_METRICS", false), "If true, skips exporting Go runtime metrics.")
+	excludePlayerMetrics := flag.Bool("exclude-player-metrics", envOrDefaultBool("A2S_EXPORTER_EXCLUDE_PLAYER_METRICS", false), "If true, exclude all `player_*` metrics. This option may be necessary for some servers.")
+	a2sOnlyMetrics := flag.Bool("a2s-only-metrics", envOrDefaultBool("A2S_EXPORTER_A2S_ONLY_METRICS", false), "If true, excludes Go runtime and promhttp metrics.")
 	maxPacketSize := flag.Int("max-packet-size", envOrDefaultInt("A2S_EXPORTER_MAX_PACKET_SIZE", 1400), "Advanced option to set a non-standard max packet size of the A2S query server.")
 	help := flag.Bool("h", false, "Show help.")
 	version := flag.Bool("version", false, "Show build version.")
@@ -62,7 +63,7 @@ func main() {
 	clientOptions := []func(*a2s.Client) error{
 		a2s.SetMaxPacketSize(uint32(*maxPacketSize)),
 	}
-	registry.MustRegister(collector.New(*namespace, *address, clientOptions...))
+	registry.MustRegister(collector.New(*namespace, *address, *excludePlayerMetrics, clientOptions...))
 
 	// Set up http handler.
 	handler := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})

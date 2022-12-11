@@ -19,7 +19,7 @@ import (
 // TestCollector_Describe_PrintTable tests the Describe function.
 // It also prints a Markdown-formatted table of all registered metrics, which can be copied to the README.
 func TestCollector_Describe_PrintTable(t *testing.T) {
-	c := collector.New("", "")
+	c := collector.New("", "", false)
 	descs := testDescribe(c)
 	if len(descs) == 0 {
 		t.Error("expected Descs but got none")
@@ -97,7 +97,7 @@ func TestCollector(t *testing.T) {
 
 	// Set up the registry and gather metrics from the test A2S server.
 	registry := prometheus.NewPedanticRegistry()
-	registry.MustRegister(collector.New("", conn.LocalAddr().String()))
+	registry.MustRegister(collector.New("", conn.LocalAddr().String(), false))
 	metrics, err := registry.Gather()
 	if err != nil {
 		t.Fatal(err)
@@ -117,6 +117,68 @@ func TestCollector(t *testing.T) {
 		expectGauge{value: 32, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "jon"}},
 		expectGauge{value: 64, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "alice"}},
 	)
+}
+
+func TestCollector_ExcludePlayerMetrics(t *testing.T) {
+	// Run a test A2S server.
+	conn, err := net.ListenUDP("udp", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv := &testserver.TestServer{
+		ServerInfo: &a2s.ServerInfo{
+			Name:       "foo",
+			Players:    3,
+			MaxPlayers: 6,
+		},
+		PlayerInfo: &a2s.PlayerInfo{
+			Count: 3,
+			Players: []*a2s.Player{
+				{
+					Index:    0,
+					Name:     "jon",
+					Duration: 32,
+				},
+				{
+					Index:    0,
+					Name:     "alice",
+					Duration: 64,
+				},
+				// Duplicate players should be de-duplicated to avoid causing registry errors.
+				{
+					Index:    0,
+					Name:     "alice",
+					Duration: 99,
+				},
+			},
+		},
+	}
+	go func() {
+		t.Error(srv.Serve(conn))
+	}()
+
+	// Set up the registry and gather metrics from the test A2S server.
+	registry := prometheus.NewPedanticRegistry()
+	registry.MustRegister(collector.New("", conn.LocalAddr().String(), true))
+	metrics, err := registry.Gather()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Spot check the gathered metrics.
+
+	testAssertGauge(t, metrics, "server_players",
+		expectGauge{value: 3, labels: map[string]string{"server_name": "foo"}},
+	)
+	testAssertGauge(t, metrics, "server_max_players",
+		expectGauge{value: 6, labels: map[string]string{"server_name": "foo"}},
+	)
+
+	for _, family := range metrics {
+		if strings.HasPrefix(*family.Name, "player_") {
+			t.Errorf("metric name %s should have been excluded", *family.Name)
+		}
+	}
 }
 
 type expectGauge struct {

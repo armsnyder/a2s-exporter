@@ -37,6 +37,7 @@ Flag | Variable | Default | Help
 --port | A2S_EXPORTER_PORT | 9841 | Port for the metrics exporter.
 --path | A2S_EXPORTER_PATH | /metrics | Path for the metrics exporter.
 --namespace | A2S_EXPORTER_NAMESPACE | a2s | Namespace prefix for all exported a2s metrics.
+--exclude-player-metrics | A2S_EXPORTER_EXCLUDE_PLAYER_METRICS | false | If true, exclude all `player_*` metrics. This option may be necessary for some servers.
 --a2s-only-metrics | A2S_EXPORTER_A2S_ONLY_METRICS | false | If true, excludes Go runtime and promhttp metrics.
 --max-packet-size | A2S_EXPORTER_MAX_PACKET_SIZE | 1400 | Advanced option to set a non-standard max packet size of the A2S query server.
 

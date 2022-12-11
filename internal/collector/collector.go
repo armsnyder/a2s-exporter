@@ -9,15 +9,16 @@ import (
 )
 
 type Collector struct {
-	addr          string
-	clientOptions []func(*a2s.Client) error
-	client        *a2s.Client
-	descs         map[string]*prometheus.Desc
+	addr                 string
+	clientOptions        []func(*a2s.Client) error
+	excludePlayerMetrics bool
+	client               *a2s.Client
+	descs                map[string]*prometheus.Desc
 }
 
 type adder func(name string, value float64, labelValues ...string)
 
-func New(namespace, addr string, clientOptions ...func(*a2s.Client) error) *Collector {
+func New(namespace, addr string, excludePlayerMetrics bool, clientOptions ...func(*a2s.Client) error) *Collector {
 	descs := make(map[string]*prometheus.Desc)
 
 	fullDesc := func(name, help string, labels []string) {
@@ -54,9 +55,10 @@ func New(namespace, addr string, clientOptions ...func(*a2s.Client) error) *Coll
 	playerDesc("player_the_ship_money", "Player's money in a The Ship server.")
 
 	return &Collector{
-		addr:          addr,
-		clientOptions: clientOptions,
-		descs:         descs,
+		addr:                 addr,
+		clientOptions:        clientOptions,
+		excludePlayerMetrics: excludePlayerMetrics,
+		descs:                descs,
 	}
 }
 
@@ -67,7 +69,7 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 }
 
 func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
-	serverInfo, playerInfo := c.queryInfo()
+	serverInfo, playerInfo := c.queryInfo(c.excludePlayerMetrics)
 
 	truthyFloat := func(v interface{}) float64 {
 		if reflect.ValueOf(v).IsNil() {
@@ -81,7 +83,10 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	}
 
 	add("server_up", truthyFloat(serverInfo))
-	add("player_up", truthyFloat(playerInfo))
+
+	if !c.excludePlayerMetrics {
+		add("player_up", truthyFloat(playerInfo))
+	}
 
 	addPreLabelled := func(name string, value float64, labelValues ...string) {
 		labelValues2 := []string{serverInfo.Name}
@@ -94,7 +99,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 }
 
 // queryInfo queries the A2S server over UDP. Failure will result in one or both of the return values being nil.
-func (c *Collector) queryInfo() (serverInfo *a2s.ServerInfo, playerInfo *a2s.PlayerInfo) {
+func (c *Collector) queryInfo(excludePlayerMetrics bool) (serverInfo *a2s.ServerInfo, playerInfo *a2s.PlayerInfo) {
 	var err error
 
 	// Lazy initialization of UDP client.
@@ -110,6 +115,10 @@ func (c *Collector) queryInfo() (serverInfo *a2s.ServerInfo, playerInfo *a2s.Pla
 	serverInfo, err = c.client.QueryInfo()
 	if err != nil {
 		fmt.Println("Could not query server info:", err)
+		return
+	}
+
+	if excludePlayerMetrics {
 		return
 	}
 
