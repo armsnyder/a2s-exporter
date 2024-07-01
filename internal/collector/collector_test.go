@@ -33,7 +33,8 @@ func TestCollector_Describe_PrintTable(t *testing.T) {
 			t.Errorf("failed pattern match for Desc %s", desc)
 			continue
 		}
-		fmt.Println(strings.Join(match[1:], " | "))
+		labels := strings.Join(strings.Split(match[3], ","), " ")
+		fmt.Println(strings.Join(append(match[1:3], labels), " | "))
 	}
 }
 

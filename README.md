@@ -55,15 +55,14 @@ Metrics names are prefixed with a namespace (default `a2s_`).
 Name | Help | Labels
 --- | --- | ---
 player_count | Total number of connected players. | server_name
-player_duration | Time (in seconds) player has been connected to the server. | server_name,player_name,player_index
-player_info | Non-numerical player info, including player_name and player_index. The value is 1, and the info is in the labels. | server_name,player_name,player_index
-player_score | Player's score (usually \"frags\" or \"kills\"). | server_name,player_name,player_index
-player_the_ship_deaths | Player's deaths in a The Ship server. | server_name,player_name,player_index
-player_the_ship_money | Player's money in a The Ship server. | server_name,player_name,player_index
+player_duration | Time (in seconds) player has been connected to the server. | server_name player_name player_index
+player_info | Non-numerical player info, including player_name and player_index. The value is 1, and the info is in the labels. | server_name player_name player_index
+player_score | Player's score (usually \"frags\" or \"kills\"). | server_name player_name player_index
+player_the_ship_deaths | Player's deaths in a The Ship server. | server_name player_name player_index
+player_the_ship_money | Player's money in a The Ship server. | server_name player_name player_index
 player_up | Was the last player info query successful. |
 server_bots | Number of bots on the server. | server_name
-server_info | Non-numerical server info, including server_steam_id and version. The value is 1, and info is in the labels. | server_name,map,folder,game,server_type,server_os,version,server_id,keywords,server_game_id,server_steam_id,the_ship_mode,source_t
-v_name
+server_info | Non-numerical server info, including server_steam_id and version. The value is 1, and info is in the labels. | server_name map folder game server_type server_os version server_id keywords server_game_id server_steam_id the_ship_mode source_tv_name
 server_max_players | Maximum number of players the server reports it can hold. | server_name
 server_players | Number of players on the server. | server_name
 server_port | The server's game port number. | server_name
