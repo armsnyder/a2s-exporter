@@ -21,21 +21,21 @@ type adder func(name string, value float64, labelValues ...string)
 func New(namespace, addr string, excludePlayerMetrics bool, clientOptions ...func(*a2s.Client) error) *Collector {
 	descs := make(map[string]*prometheus.Desc)
 
-	fullDesc := func(name, help string, labels []string) {
+	fullDesc := func(name, help string, labels ...string) {
 		descs[name] = prometheus.NewDesc(prometheus.BuildFQName(namespace, "", name), help, labels, nil)
 	}
 	basicDesc := func(name string, help string) {
-		fullDesc(name, help, []string{"server_name"})
+		fullDesc(name, help, "server_name")
 	}
 	playerDesc := func(name string, help string) {
-		fullDesc(name, help, []string{"server_name", "player_name", "player_index"})
+		fullDesc(name, help, "server_name", "player_name", "player_index")
 	}
 
 	fullDesc("server_info", "Non-numerical server info, including server_steam_id and version. The value is 1, and info is in the labels.",
-		[]string{"server_name", "map", "folder", "game", "server_type", "server_os", "version", "server_id", "keywords", "server_game_id", "server_steam_id", "the_ship_mode", "source_tv_name"})
+		"server_name", "map", "folder", "game", "server_type", "server_os", "version", "server_id", "keywords", "server_game_id", "server_steam_id", "the_ship_mode", "source_tv_name")
 
-	fullDesc("server_up", "Was the last server info query successful.", nil)
-	fullDesc("player_up", "Was the last player info query successful.", nil)
+	fullDesc("server_up", "Was the last server info query successful.")
+	fullDesc("player_up", "Was the last player info query successful.")
 
 	basicDesc("server_protocol", "Protocol version used by the server.")
 	basicDesc("server_players", "Number of players on the server.")
