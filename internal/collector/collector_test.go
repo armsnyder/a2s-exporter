@@ -117,6 +117,10 @@ func TestCollector(t *testing.T) {
 		expectGauge{value: 32, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "jon"}},
 		expectGauge{value: 64, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "alice"}},
 	)
+	testAssertGauge(t, metrics, "player_info",
+		expectGauge{value: 1, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "jon"}},
+		expectGauge{value: 1, labels: map[string]string{"server_name": "foo", "player_index": "0", "player_name": "alice"}},
+	)
 }
 
 func TestCollector_ExcludePlayerMetrics(t *testing.T) {

@@ -49,6 +49,7 @@ func New(namespace, addr string, excludePlayerMetrics bool, clientOptions ...fun
 	basicDesc("server_the_ship_duration", "Time (in seconds) before a player is arrested while being witnessed in a The Ship server.")
 
 	basicDesc("player_count", "Total number of connected players.")
+	playerDesc("player_info", "Non-numerical player info, including player_name and player_index. The value is 1, and the info is in the labels.")
 	playerDesc("player_duration", "Time (in seconds) player has been connected to the server.")
 	playerDesc("player_score", `Player's score (usually "frags" or "kills").`)
 	playerDesc("player_the_ship_deaths", "Player's deaths in a The Ship server.")
@@ -221,6 +222,7 @@ func (c *Collector) collectPlayerInfo(playerInfo *a2s.PlayerInfo, add adder) {
 	for _, player := range c.uniquePlayers(playerInfo.Players) {
 		labelValues := []string{player.Name, fmt.Sprintf("%d", player.Index)}
 
+		add("player_info", 1, labelValues...)
 		add("player_duration", float64(player.Duration), labelValues...)
 		add("player_score", float64(player.Score), labelValues...)
 
