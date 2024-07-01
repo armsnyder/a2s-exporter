@@ -1,5 +1,5 @@
-# syntax=docker/dockerfile:1.4
-FROM golang:1.19 AS builder
+# syntax=docker/dockerfile:1
+FROM golang:1.22 AS builder
 WORKDIR /build
 COPY . .
 ARG BUILD_VERSION=development

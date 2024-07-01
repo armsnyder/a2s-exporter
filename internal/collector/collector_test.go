@@ -26,7 +26,7 @@ func TestCollector_Describe_PrintTable(t *testing.T) {
 	}
 
 	// HACK: The only exported method on Desc is String().
-	pattern := regexp.MustCompile(`fqName: "([a-z_]+)", help: "(.+)", constLabels: .+, variableLabels: \[([^]]*)]`)
+	pattern := regexp.MustCompile(`fqName: "([a-z_]+)", help: "(.+)", constLabels: .+, variableLabels: \{([^}]*)}`)
 	for _, desc := range descs {
 		match := pattern.FindStringSubmatch(desc.String())
 		if match == nil {
