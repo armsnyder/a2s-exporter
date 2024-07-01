@@ -9,8 +9,8 @@ linters:
     - gocritic
     - gofmt
     - goimports
-    - golint
     - misspell
+    - revive
     - testpackage
     - unconvert
     - whitespace
